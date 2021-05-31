@@ -28,7 +28,11 @@ const float XMAX =  WIDTH * 0.5;
 const float YMIN = -HEIGHT * 0.5;
 const float YMAX =  HEIGHT * 0.5;
 
+const float FOG_START = 0;
+const float FOG_END = -220;
+
 TextureBMP texture;
+TextureBMP desertTexure;
 
 vector<SceneObject*> sceneObjects;
 
@@ -74,6 +78,21 @@ glm::vec3 trace(Ray ray, int step)
         }
     }
 
+    if (ray.index == 1) {
+
+        //backWall Desert image
+        float texcoords = (ray.hit.x - -80.0)/(80.0 - -80.0);
+        float texcoordt = (ray.hit.y - -15.0)/(60 - -15.0);
+        if(texcoords > 0 && texcoords < 1 &&
+        texcoordt > 0 && texcoordt < 1)
+        {
+            color=desertTexure.getColorAt(texcoords, texcoordt);
+            obj->setColor(color);
+        }
+    }
+
+
+
 
     color = obj->lighting(lightPos, -ray.dir, ray.hit);
 
@@ -98,6 +117,19 @@ glm::vec3 trace(Ray ray, int step)
         color = color + (rho * reflectedColor);
     }
 
+    //Fog
+    double fog_factor;
+
+    if (ray.hit.z > FOG_START) {
+        fog_factor = 0;
+    } else if (ray.hit.z < FOG_END) {
+        fog_factor = 1;
+    } else {
+        fog_factor = (ray.hit.z - FOG_START)/(FOG_END - FOG_START);
+    }
+    color.x = color.x * (1 - fog_factor) + fog_factor;
+    color.y = color.y * (1 - fog_factor) + fog_factor;
+//    color.z = color.z * (1 - fog_factor) + fog_factor;
     return color;
 }
 
@@ -158,23 +190,32 @@ void initialize()
     glClearColor(0, 0, 0, 1);
 
     texture = TextureBMP("Butterfly.bmp");
+    desertTexure = TextureBMP("Desert.bmp");
 
-    Plane *plane = new Plane (glm::vec3(-20., -15, -40), //Point A
-    glm::vec3(20., -15, -40), //Point B
-    glm::vec3(20., -15, -200), //Point C
-    glm::vec3(-20., -15, -200)); //Point D
+
+    Plane *plane = new Plane (glm::vec3(-80., -15, -40), //Point A
+    glm::vec3(80., -15, -40), //Point B
+    glm::vec3(80., -15, -200), //Point C
+    glm::vec3(-80., -15, -200)); //Point D
     plane->setColor(glm::vec3(0.8, 0.8, 0));
     plane->setSpecularity(false);
     sceneObjects.push_back(plane);
 
-    Sphere *sphere1 = new Sphere(glm::vec3(-5.0, 0.0, -90.0), 15.0);
+    Plane *backWall = new Plane (glm::vec3(-80.0, -15.0, -200.0), //Point A
+    glm::vec3(80.0, -15.0, -200.0), //Point B
+    glm::vec3(80.0, 60.0, -200.0), //Point C
+    glm::vec3(-80.0, 60.0, -200.0)); //Point D
+    backWall->setSpecularity(false);
+    sceneObjects.push_back(backWall);
+
+    Sphere *sphere1 = new Sphere(glm::vec3(-5.0, 0.0, -150.0), 15.0);
     sphere1->setColor(glm::vec3(0, 0, 1));
     //sphere1->setSpecularity(false);
     sphere1->setReflectivity(true, 0.8);
     sceneObjects.push_back(sphere1);         //Add sphere to scene objects
 
 
-    Sphere *sphere2 = new Sphere(glm::vec3(5.0, -10.0, -60.0), 5.0);
+    Sphere *sphere2 = new Sphere(glm::vec3(5.0, -5.0, -40.0), 5.0);
     sphere2->setColor(glm::vec3(0, 1, 0));
     //sphere2->setShininess(5);
     sceneObjects.push_back(sphere2);         //Add sphere to scene objects
@@ -183,7 +224,7 @@ void initialize()
     sphere3->setColor(glm::vec3(1, 0, 0));
     sceneObjects.push_back(sphere3);         //Add sphere to scene objects
 
-    Sphere *sphere4 = new Sphere(glm::vec3(10.0, 10, -60.0), 3.0);
+    Sphere *sphere4 = new Sphere(glm::vec3(23.0, 10, -130.0), 3.0);
     sphere4->setColor(glm::vec3(0, 1, 1));
     sceneObjects.push_back(sphere4);         //Add sphere to scene objects
 

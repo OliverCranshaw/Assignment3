@@ -9,6 +9,7 @@ find_package(GLUT REQUIRED)
 find_package(glm REQUIRED)
 
 configure_file(Butterfly.bmp Butterfly.bmp COPYONLY)
+configure_file(Desert.bmp Desert.bmp COPYONLY)
 
 include_directories( ${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIRS} ${GLM_INCLUDE_DIR} )
 
