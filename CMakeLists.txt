@@ -8,8 +8,8 @@ find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(glm REQUIRED)
 
-configure_file(Butterfly.bmp Butterfly.bmp COPYONLY)
-configure_file(Desert.bmp Desert.bmp COPYONLY)
+configure_file(satelite.bmp satelite.bmp COPYONLY)
+configure_file(background.bmp background.bmp COPYONLY)
 
 include_directories( ${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIRS} ${GLM_INCLUDE_DIR} )
 
